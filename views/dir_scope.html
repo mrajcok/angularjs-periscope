@@ -1,0 +1,55 @@
+#header#
+<div class="demo">
+  <div id="instructions">
+    On this page we have a controller that contains a directive that creates
+    a new child scope.
+    <ol>
+      <li>Click the #rb#, then click the #psb# to see the initial state.
+        The controller and the directive each have a scope.
+        The directive also has its own controller, which is used to add property
+        |newProp| to the directive |$scope|.
+      <li>Type something in the textboxes, then click the #psb#.
+        The primitive associated with |ng-model| is created on the
+        directive child |$scope|, rather than the parent |$scope|.
+        This property now hides/shadows the parent |$scope| property of the
+        same name.
+        The object property associated with the second |ng-model| references
+        the object in the parent |$scope|, so changes are affected in the
+        parent |$scope|.
+    </ol>
+    <p><b>Tip:</b> <a href="https://github.com/angular/angular.js/wiki/Understanding-Scopes#javascript-prototypal-inheritance">
+    normal JavaScript prototypal inheritance</a> rules apply to the
+      directive child scope.
+      <br>See also <a href="http://stackoverflow.com/questions/14914213">this
+      StackOverflow question</a> about how to choose the correct type of scope to
+      use when creating a directive.
+  </div>
+  #code-start#
+  <div ng-controller="Ctrl">
+    primitive: <i>{{primitive}}</i>,  model.prop: <i>{{model.prop}}</i><br>
+    <div my-directive></div>
+  </div>
+  #code-end#
+</div>
+#footer#
+
+<script>
+'use strict';
+angular.module('myApp', ['periscope'])
+.controller('Ctrl', ['$scope', function($scope) {
+  $scope.primitive = 'hello';
+  $scope.model     = { prop: 'hi'};
+}])
+.directive('myDirective', function() {
+  return {
+    scope:      true,
+    template:   '<div>primitive: <input ng-model="primitive"><br>'
+                + 'model.prop: <input ng-model="model.prop"></div>',
+    controller: function($scope) {
+      $scope.newProp = 'new';
+    } 
+  }
+});
+</script>
+</body>
+</html>

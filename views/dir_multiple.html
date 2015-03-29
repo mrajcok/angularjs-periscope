@@ -1,0 +1,129 @@
+#header#
+<div class="demo">
+  <div id="instructions">
+    On this page we have four controllers, each of which contains a &lt;div>
+    that has two directives defined on it.  Each directive creates a property
+    on its scope.
+    <ol>
+      <li>Click the #rb#, then click the #psb# to see the initial state.
+        Here's the rundown, which you can verify by looking at the picture
+        that Peri$scope just generated:
+        <table>
+          <tr><th>Ctrl<th>directive #1<th>directive #2<th>Result
+          <tr><td>1<td>no new scope<td>no new scope<td>Both directives use the
+            controller's scope. (This should be obvious.)
+          <tr><td>2<td>new scope<td>new scope<td>Both directives <b>share</b> one
+            new child scope.
+          <tr><td>3<td>new scope<td>no new scope<td>Both directives <b>share</b>
+            one new child scope.  Why does dir #2 use the child scope?  This seems
+            odd to me.  Below, note how |noNewScopeDir2Prop| ends up in the child
+            scope of Ctrl3, and not Ctrl3's scope!
+          <tr><td>4<td>isolate scope<td>no new scope
+            <td>Angular v1.0: both directives <b>share</b> the isolate scope.
+              <br>Angular v1.2+: dir #1 uses the isolate scope, dir #2 uses the
+               controller's scope.
+        </table>
+        Note that these combinations do not work (Angular throws an error):
+        <table>
+          <tr><th>directive #1<th>directive #2
+          <tr><td>isolate scope<td>new scope
+          <tr><td>isolate scope<td>isolate scope
+        </table>
+    </ol>
+    <p><b>Tips:</b> whenever there is more than one directive used on an element:
+      <ul>
+        <li>If there is an isolate scope involved, only one directive can define
+            an isolate scope.  All other directives can not define any kind of
+            scope. This makes directives with isolate scopes difficult to use with
+            other directives. So in general, don't use an isolate scope in your
+            directive if you intend to use it with other directives on the same
+            element.
+            Isolate scopes are best used for "standalone" or "self-contained"
+            components/directives &ndash; i.e., when the directive is itself
+            a new element, or when it is used by itself on an element.
+        <li>If at least one of the directives defines a new scope, all of the
+            directives will use/share it.  This means that you might want to use
+            some kind of naming convention for new scope properties that your
+            directive creates, to avoid name clashes.
+      </ul>
+      See also <a href="http://stackoverflow.com/questions/14914213">this
+      StackOverflow question</a> about how to choose the correct type of scope to
+      use when creating a directive.
+  </div>
+  #code-start#
+  <div ng-controller="Ctrl1">
+    <div no-new-scope-dir1 no-new-scope-dir2></div>
+  </div>
+  <div ng-controller="Ctrl2">
+    <div new-scope-dir1 new-scope-dir2></div>
+  </div>
+  <div ng-controller="Ctrl3">
+    <div new-scope-dir1 no-new-scope-dir2></div>
+  </div>
+  <div ng-controller="Ctrl4">
+    <div isolate-dir no-new-scope-dir2></div>
+  </div>
+  #code-end#
+</div>
+#footer#
+
+<script>
+'use strict';
+angular.module('myApp', ['periscope'])
+.controller('Ctrl1', ['$scope', function($scope) {
+  $scope.ctrl  = 'ctrl1';
+  $scope.model = { prop: 'hi'};
+}])
+.controller('Ctrl2', ['$scope', function($scope) {
+  $scope.ctrl  = 'ctrl2';
+  $scope.model = { prop: 'hi'};
+}])
+.controller('Ctrl3', ['$scope', function($scope) {
+  $scope.ctrl  = 'ctrl3';
+  $scope.model = { prop: 'hi'};
+}])
+.controller('Ctrl4', ['$scope', function($scope) {
+  $scope.ctrl  = 'ctrl4';
+  $scope.model = { prop: 'hi'};
+}])
+.directive('noNewScopeDir1', function() {
+  return {
+    link: function(scope) {
+      scope.noNewScopeDir1Prop = 'no new scope 1';
+    }
+  }
+})
+.directive('noNewScopeDir2', function() {
+  return {
+    link: function(scope) {
+      scope.noNewScopeDir2Prop = 'no new scope 2';
+    }
+  }
+})
+.directive('newScopeDir1', function() {
+  return {
+    scope:  true,
+    link:   function(scope) {
+      scope.newScopeDir1Prop = 'new scope 1';
+    }
+  }
+})
+.directive('newScopeDir2', function() {
+  return {
+    scope:  true,
+    link:   function(scope) {
+      scope.newScopeDir2Prop = 'new scope 2';
+    }
+  }
+})
+.directive('isolateDir', function() {
+  return {
+    scope:  {},
+    link:   function(scope) {
+      scope.isolateDirProp = 'isolate';
+    }
+  }
+});
+</script>
+</body>
+</html>

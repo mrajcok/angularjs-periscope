@@ -1,0 +1,125 @@
+#header#
+<div class="demo">
+  <div ng-controller="Ctrl1">
+    <div id="instructions">
+      On this page we have one controller, hence one |$scope|.
+      The HTML contents of the controller is rendered directly after the
+      step-by-step instructions, and directly before the Peri$scope buttons.
+      Also above the Peri$scope buttons, but floated to the right and
+      in a fixed-width font, is a "view-source" kind of rendering of same the
+      HTML contents.  The view-source text will be more useful on other demo pages.
+      Below we'll introduce you to some of the functionality of Peri$scope.
+      <ol>
+        <li>Check the "key" checkbox and then click the #psb# to see the initial state.
+          Notice the inheritance chain (dashed line) and the parent-child relationship
+          (solid blue line).  Our controller |$scope| has no properties yet.
+          If you selected Angular v1.3 or higher, you'll notice that |$rootScope|
+          has an $id of 1.
+          In Angular v1.2, the $id is "001", and in Angular 1.0, the $id is "002".
+        <li>Uncheck the "key" checkbox. 
+          <a href ng-click="addPrimitive()">Add a primitive</a> then click the
+          #psb# to see the change.  The |$scope| property name has a yellow background,
+          indicating that it is a new property.
+        <li><a href ng-click="changePrimitive()">Change the primitive value</a> then
+          click the #psb#.  The |$scope| property value has a yellow background,
+          indicating that it has changed.
+        <li><a href ng-click="deletePrimitive()">Delete the primitive</a>, click
+          the #psb#.  The top row of the |$scope| node is highlighted, indicating that a
+          property has been removed.
+        <li>Click the "del pics" button to delete the Peri$scope images associated
+          with this browsing session.
+        <li><a href ng-click="addArray()">Add an array</a>, click the #psb#.
+          The yellow highlighting should be self-explanatory.
+          Array values have a light blue background.
+        <li><a href ng-click="changeElement()">Change an array element value</a>, click the #psb#.
+        <li><a href ng-click="addElement()">Add an array element</a>, click the #psb#.
+        <li><a href ng-click="deleteElement()">Delete an array element</a>, click the #psb#.
+        <li><a href ng-click="addObject()"> Add an object</a>, click the #psb#.
+          Objects have a light purple background.
+        <li><a href ng-click="addProperty()">Add an object property</a>, click the #psb#.
+        <li><a href ng-click="deleteProperty()">Delete an object property</a>, click
+          the #psb#.
+        <li>Check the "$$watchers" checkbox and then click the #psb# to see the
+          watch listeners that Angular automatically added because of the
+          {<span></span>{}}s that we're using in the HTML.  To get the actual
+          function names of the watch listeners, ensure that an unminified
+          version of Angular is loaded.  Note that this is an experimental
+          feature, and it is probably only useful to see how many watch listeners
+          are attached to a scope.
+        <li>Uncheck the "$$watchers" checkbox.<br>
+          Peri$scope can handle nested structures. Click the #rb# to delete the
+          images and clear the diff history.
+          <a href ng-click="addNested()">Add some nested structures</a>, 
+          then click the #psb#.
+          <br>Note that the "reset all" button is similar to the #rb#.  Like
+          the #rb#, it deletes the images and clears the diff history,
+          but unlike the #rb#, it deletes the images and clears the diff history
+          for all Peri$scope browser sessions.
+          (Each Peri$scope browser tab/window has its own state.)
+      </ol>
+    </div>
+    #code-start#
+      primitive: <i>{{primitive}}</i><br>
+      array:     <i>{{array}}</i><br>
+      obj:       <i>{{obj}}</i>
+    #code-end#
+  </div>
+</div>
+#footer#
+
+<script>
+'use strict';
+angular.module('myApp', ['periscope'])
+.controller('Ctrl1', ['$scope', function($scope) {
+  $scope.addPrimitive   = function() { $scope.primitive = 'primitive value'; }
+  $scope.changePrimitive= function() { $scope.primitive = 77; }
+  $scope.deletePrimitive= function() { delete $scope.primitive; }
+  $scope.addArray       = function() { $scope.array = [1,2,3]; }
+  $scope.changeElement  = function() {
+    if(!('array' in $scope)) {
+      console.error('Create the array first');
+    } else {
+      $scope.array[0]++; 
+    }
+  };
+  $scope.addElement = function() {
+    if(!('array' in $scope)) {
+      console.error('Create the array first');
+    } else {
+     $scope.array.push('new value');
+    }
+  };
+  $scope.deleteElement = function() {
+    if(!('array' in $scope)) {
+      console.error('Create the array first');
+    } else {
+     $scope.array.splice($scope.array.indexOf(2), 1);
+    }
+  };
+  $scope.addObject   = function() { $scope.obj = { framework: 'Angular', score: 94 }; }
+  $scope.addProperty = function() {
+    if(!('obj' in $scope)) {
+      console.error('Create the object first');
+    } else {
+     $scope.obj.newProp = 'new property';
+    }
+  };
+  $scope.deleteProperty = function() {
+    if(!('obj' in $scope)) {
+      console.error('Create the object first');
+    } else {
+     delete $scope.obj.score;
+    }
+  };
+  $scope.addNested = function() { 
+    if(!('array' in $scope)) {  $scope.array = []; }
+    $scope.array.push( { name: 'Mark', nestedObj:
+        { taskrunner: 'gulp', nestedArr: [77,88] }
+      }, [100, "a string", { prop1: "a value" }] );
+    if(!('obj' in $scope)) {  $scope.obj = {}; }
+    $scope.obj.arr = [1,2,3, { name: 'Mark', arr2: [5,6] }, new Date()];
+  };
+}]);
+</script>
+</body>
+</html>

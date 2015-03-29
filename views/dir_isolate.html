@@ -1,0 +1,137 @@
+#header#
+<div class="demo">
+  <div id="instructions">
+    On this page we have two controllers which nest.  The child controller
+    contains a directive that creates a new isolate scope.  The isolate scope
+    maps/binds to scope properties in the child <i>and parent</i> scopes.
+    <ol>
+      <li>Get some coffee or tea. This one's complicated.
+      <li>Click the #rb#, check the "key" checkbox, then click the #psb# to see
+        the initial state.
+        The controllers and the directive each have a scope.  The directive's
+        scope is an "isolate" scope, which means it does not prototypically inherit
+        from its parent scope.  Rather, it prototypically inherits from a |Scope|
+        object. The black dashed line that emanates from the isolate scope does not
+        point to the parent scope like we've seen up until this point.  Rather, it
+        points to the |Scope| object.
+        (Note, the |Scope| object appears even if the Peri$scope "Scope"
+        checkbox is unchecked, because some scope other than the |$rootScope|
+        inherits from it.)<br>
+        As you can see from the solid blue arrow, AngularJS still maintains a
+        child &rarr; parent relationship between the isolate scope and its parent
+        scope, which is accesible via the |$parent| property on the child/isolate
+        scope. But don't be tempted to use this property, as it can get unwieldy
+        when scopes nest.<br>
+        The directive also has its own controller, which is used to add property
+        |ctrl| to the directive |$scope|.  Note how each |$scope| has a |ctrl|
+        primitive property that hides/shadows the parent |$scope| property of
+        the same name.<br>
+        Isolate scope property |combo| uses interpolation to pull in values from
+        properties on both of its ancestor controller scopes.  There is no dashed
+        reference line associated with this property because it does not map to a
+        single ancestor property.  This is also why the cell is shown in a
+        reddish color.
+        Conversely, |prim1| references a single ancestor property, hence it has
+        a dashed line emanating from it.
+        Isolate properties that use <tt>@</tt> binding will always show the
+        interpolated string result in the isolate scope after the <tt>@</tt>
+        symbol.<br>
+        Isolate scope property |model2| references object property |parentModel2|
+        in ParentCtrl's scope, whereas 
+        isolate scope property |myProp| references primitive property |parentModel.prop|
+        in ParentCtrl's scope.
+        Note the subtle difference in where the purple dashed lines end up:
+        the head of the dashed line emanating from |model2| points to the value of
+        |parentModel2| &ndash; the object, whereas
+        the head of the dashed line emanating from |myProp| points to the value of
+        |parentModel.prop| &ndash; i.e., primitive value <tt>model prop</tt>.<br>
+        Isolate scope property |myArr| references array property |childArray|
+        in ChildCtrl's scope.<br>
+        Isolate scope property |myFunc| uses <tt>&</tt> binding.  Peri$scope currently
+        does not show which ancestor property is referenced by <tt>&</tt> binding
+        (contributions welcome, hint, hint).
+      <li>Uncheck the "key" checkbox. Type something in each textbox, then click
+        the #psb#.
+        Even though |myProp| uses ngModel with a primitive, ancsestor |$scope|
+        property |parentPrimitive| is affected because of the <tt>=</tt> binding.<br>
+        The string values of the isolate scope properties that bind with <tt>@</tt>
+        are updated.
+      <li>Click the "add array element" link below, then click the #psb#.
+        The isolate scope <tt>push()</tt>ed a new value onto property |myArr|,
+        which references an ancestor property, so the ancestor was affected.
+      <li>Click the "run function" link below, then click the #psb#.
+        The isolate scope called <tt>myFunc()</tt>, which, due to <tt>&</tt>
+        binding, calls a method on ParentCtrl, which adds some text to property
+        |parentPrimitive|.
+        The isolate scope properties that bind to that property using <tt>@</tt>
+        are updated.
+    </ol>
+    <p><b>Tips:</b> You can actually bind to primitives using <tt>=</tt>.<br>
+      If you don't bind to an ancestor property, you can't access it in the
+      isolate scope, because it doesn't prototypically inherit from its |$parent|.
+      <br>See also <a href="http://stackoverflow.com/questions/14914213">this
+      StackOverflow question</a> about how to choose the correct type of scope to
+      use when creating a directive.
+  </div>
+  #code-start#
+  <div ng-controller="ParentCtrl">
+    ctrl: <i>{{ctrl}}</i><br>
+    parentPrimitive:  <input ng-model="parentPrimitive"><br>
+    parentModel.prop: <i>{{parentModel.prop}}</i><br>
+    <div ng-controller="ChildCtrl">
+      ctrl: <i>{{ctrl}}</i><br>
+      childPrimitive: <input ng-model="childPrimitive"><br>
+      childArray:     <i>{{childArray}}</i><br><br>
+      <div my-directive prim1="{{parentPrimitive}}"
+        combo-prim="{{parentPrimitive}} and {{childPrimitive}}"
+        arr="childArray" prop="parentModel.prop"
+        model2="parentModel2" my-func="func()">
+      </div>
+    </div>
+  </div>
+  #code-end#
+</div>
+#footer#
+
+<script>
+'use strict';
+angular.module('myApp', ['periscope'])
+.controller('ParentCtrl', ['$scope', function($scope) {
+  $scope.ctrl             = 'parent';
+  $scope.parentPrimitive  = 'parent prim';
+  $scope.parentModel      = { prop: 'model prop'};
+  $scope.parentModel2     = { prop: 'model2 prop'};
+  $scope.func             = function() { $scope.parentPrimitive += ' more text'; }
+}])
+.controller('ChildCtrl', ['$scope', function($scope) {
+  $scope.ctrl             = 'child';
+  $scope.childPrimitive   = 'child prim';
+  $scope.childArray       = [1,2,3];
+}])
+.directive('myDirective', function() {
+  return {
+    scope: { prim1:  '@',
+             combo:  '@comboPrim',
+             model2: '=',
+             myProp: '=prop',
+             myArr:  '=arr',
+             myFunc: '&'
+           },
+    template: '<div>ctrl: <i>{{ctrl}}</i><br>'
+              + 'combo:   <i>{{combo}}</i><br>'
+              + 'model2:  <i>{{model2}}</i><br>'
+              + 'myArr:   <i>{{myArr}}</i><br>'
+              + 'myProp:  <input ng-model="myProp"><br>'
+              + 'prim1:   <i>{{prim1}}</i><br>'
+              + '<a href ng-click="myArr.push(4);">add array element</a>'
+                + ' - <tt>myArr.push(4);</tt><br>'
+              + '<a href ng-click="myFunc()">run function myFunc()</a>'
+              + '</div>',
+    controller: function($scope) {
+      $scope.ctrl = 'isolate';
+    }
+  }
+});
+</script>
+</body>
+</html>

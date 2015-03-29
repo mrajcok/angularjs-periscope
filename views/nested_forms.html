@@ -1,0 +1,57 @@
+#header#
+<div class="demo">
+  <div id="instructions">
+    On this page we have one controller, hence one |$scope|, and two forms,
+    one of which is nested inside the other.
+    <ol>
+      <li>Click the Peri$scope #rb# (not the form #rb#) to delete the images and
+        clear the diff history.
+        Check the "key" checkbox and then click the #psb# to see the initial state.
+        |formCtrl| and |nestedFormCtrl| are instances of
+        <a href="https://docs.angularjs.org/api/ng/type/form.FormController">FormController</a>.
+        |modelCtrl| and |modelCtrl2| are instances of
+        <a href="https://docs.angularjs.org/api/ng/type/ngModel.NgModelController">NgModelController</a>.
+        Peri$scope shows select properties of those controllers.
+        <br><b>TBD:</b> Someday, Peri$scope may be enhanced to show FormControllers
+        and NgModelControllers as separate nodes in the graphs/pictures.
+      <li>Uncheck the "key" checkbox.
+        Type something into the textboxes and click the #psb#.
+        Notice that new object properties |model| and |model2| are created.
+        Since the nested form (i.e., Angular directive |ng-form|) does not create
+        a new scope, |model2| is created on the same scope as |model|.
+    </ol>
+    <p><b>Best Practice:</b> |ng-model| should be used with model properties
+      that the |$scope| references.  I.e., have a "dot" in your ng-model expression.
+      <a href="http://youtu.be/ZhfUv0spHCY?t=30m2s">Listen to Misko</a> if that
+      didn't make sense.
+  </div>
+  #code-start#
+  <div ng-controller="Ctrl1">
+    <form name="formCtrl">
+      model.prop1: <input ng-model="model.prop1" name="modelCtrl">
+      <input type="button" ng-click="reset(formCtrl)" value="reset">
+      <input type="submit" ng-click="submit()" value="submit">
+      <div ng-form name="nestedFormCtrl">
+        model2.prop1: <input ng-model="model2.prop1" name="model2Ctrl">
+      </div>
+    </form>
+  </div>
+  #code-end#
+</div>
+#footer#
+
+<script>
+'use strict';
+angular.module('myApp', ['periscope'])
+.controller('Ctrl1', ['$scope', function($scope) {
+  $scope.reset = function(formCtrl) {
+    $scope.model = '';
+    formCtrl.$setPristine();
+  };
+  $scope.submit = function() {
+    // do something here with $scope.model
+  };
+}]);
+</script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+#header#
+<div class="demo">
+  <div id="instructions">
+    On this page we have two controllers that use a
+    <a href="https://docs.angularjs.org/guide/services">service</a> to share data.
+    <ol>
+      <li>Click the reset button, check the "key" checkbox, then click the #psb#
+        to see the initial state.
+        Peri$scope draws services, in addition to scopes, as nodes.
+        Notice that |service| in Ctrl1 and |theService| in Ctrl2 reference the same
+        single service object. (Services in AngularJS are singletons.)
+        Notice that |localArray| is a reference to |serviceArray|,
+        |localNestedObj| is a reference to |serviceNestedObj.nestedObj|,
+        |localObj| is a reference to |serviceObj|, and
+        |localNestedArray| is a reference to array |nestedArray| &ndash;
+        these are all references to objects inside the service.
+      <li>Uncheck the "key" checkbox.
+        Type something in the four service* textboxes, then click the #psb#.
+        Since |ng-model| for these four textboxes refers to properties of the
+        service object, they affect the service.
+      <li>Type something in the |localObj.name| textbox, then click the #psb#.
+        In Ctrl1, |localObj| was assigned to |myService.serviceObj|, and
+        since |serviceObj| is an object, |localObj| is a reference to
+        |myService.serviceObj|.
+        Therefore, any changes made to |localObj| (e.g., to |localObj.name|
+        via |ng-model|) affect the object it references, which is
+        |myService.serviceObj|.
+      <li>Type something in the |localPrimitive| textbox, then click the #psb#.
+        In Ctrl1, |localPrimitive| was assigned to |myService.servicePrimitive|,
+        but since |servicePrimitive| is a primitive, |localPrimitive| is
+        also created as a primitive (not a reference), and hence its initial value
+        is a copy of the current value of |myService.servicePrimitive|.
+        (This is how JavaScript works.)
+        Therefore, any changes made to |localPrimitive| (e.g., via |ng-model|)
+        affect the local scope variable/property &ndash; they do not affect the
+        primitive defined in the service.  So don't do this!
+    </ol>
+    <p><b>Best Practice:</b> When multiple controllers need access to the same
+      data (or state or code), a service should be used.  (You should not rely on
+      scope inheritance, as it restricts how you structure your HTML.)
+      <br>Do not assign primitives defined in the service to controller scope
+      variables, because this will create local scope variables/properties that
+      do not reference the service.
+  </div>
+  #code-start#
+  <div ng-controller="Ctrl1">
+    Ctrl1<br>
+    service.servicePrimitive: <input ng-model="service.servicePrimitive"><br>
+    service.serviceObj.name:  <input ng-model="service.serviceObj.name"><br>
+    localPrimitive:           <input ng-model="localPrimitive"><br>
+    localObj.name:            <input ng-model="localObj.name"><br>
+    <a href ng-click="addServiceProperty()">add a new property</a> to the service<br>
+    <a href ng-click="deleteServiceProperty()">delete property servicePrimitive</a>
+      from the service
+  </div>
+  <div ng-controller="Ctrl2">
+    Ctrl2<br>
+    theService.servicePrimitive: <input ng-model="theService.servicePrimitive"><br>
+    theService.serviceObj.name:  <input ng-model="theService.serviceObj.name">
+  </div>
+  #code-end#
+</div>
+#footer#
+
+<script>
+'use strict';
+angular.module('myApp', ['periscope'])
+.factory('myService', [function() {
+  var myService = {
+    servicePrimitive:  'Hello',
+    serviceObj:        { name: 'Mark' },
+    serviceNestedObj:  { nestedObj: { age: 46 } },
+    serviceArray:      [ 1,2,3, { prop1: 18, nestedArray: [55,77] }, [55,66] ],
+    serviceFunction:   function() { myService.servicePrimitive = 'Hi'; }
+  };
+  return myService;
+}])
+.controller('Ctrl1', ['$scope','myService', function($scope, myService) {
+  $scope.ctrl           = 'ctrl1';
+  $scope.service        = myService;
+  $scope.localPrimitive = myService.servicePrimitive;  // warning: copy is made!!!
+  $scope.localObj       = myService.serviceObj;    // reference
+  $scope.localNestedObj = myService.serviceNestedObj.nestedObj;  // reference
+  $scope.localArray     = myService.serviceArray;  // reference
+  $scope.deleteServiceProperty = function() {
+    delete myService.servicePrimitive;
+  };
+  $scope.addServiceProperty = function() {
+    myService.newProp = 22;
+  };
+}])
+.controller('Ctrl2', ['$scope','myService', function($scope, myService) {
+  $scope.ctrl             = 'ctrl2';
+  $scope.theService       = myService;
+  $scope.localNestedArray = myService.serviceArray[3].nestedArray;
+}]);
+</script>
+</body>
+</html>

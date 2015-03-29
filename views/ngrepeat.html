@@ -1,0 +1,72 @@
+#header#
+<div class="demo">
+  <div id="instructions">
+    On this page we have two controllers.  The first controller uses |ng-repeat|
+    to iterate over an array of |names|.  Each name is a string and is used in an
+    &lt;input> element with |ng-model|.
+    The second controller uses |ng-repeat| to iterate over an array of person objects.
+    Each name property of the person object is used in an &lt;input> element
+    with |ng-model|.
+    <ol>
+      <li>Click the #rb#, check the "key" checkbox (don't skip this, as we'll
+        see some new items in the key this time), then click the #psb#
+        to see the initial state.  Oooh ahhh... nice picture GraphViz!
+        Notice the inheritance chains (dashed lines), the parent-child relationships
+        (solid blue lines), and sibling relationships (solid green lines).
+        |ng-repeat| creates a child scope for each iterated value.  This child
+        scope prototypically inherts from its parent (the controller |$scope|
+        in this case).
+        <br>In the child |$scope|s associated with the first controller, each child 
+        |$scope| gets its own |name| primitive property, which hides/shadows the parent
+        property of the same name.  (We saw this same behavior in the 
+        <a href="/demos/nested_ctrls/#angularVersion#">nested controller</a> demo.)
+        <br>In the child |$scope|s associated with the second controller, each child 
+        |$scope| has a |person| property that references a parent property.
+      <li>Right-click inside the first textbox and select "Inspect element" from
+        the context menu.  Switch to the Console tab and type <tt>scopeId($0)</tt>.
+        In Chrome, |$0| returns the most recently selected element.
+        |scopeId()| is a global function that Peri$scope defines.  Use this
+        technique to determine which scope an element is associated with.
+      <li>Uncheck the "key" checkbox.
+        Change the value of at least one textbox from each pair, click the #psb#.
+        Notice how writes to the primitives go to the |ng-repeat| scopes,
+        whereas writes to the object properties go to the referenced objects.
+        <br>Does that matter?  Yes, because normally you want |ng-model| changes
+        to be accessible in the parent scope, not the |ng-repeat| child scope.
+    </ol>
+    <p><b>Best Practice:</b> To prevent unexpected "own" primitive properties 
+      from being created in |ng-repeat| child |$scope|s
+      (that shadow ancestor properties of the same name),
+      use object properties with |ng-repeat|, not primitives.
+  </div>
+  #code-start#
+  <div ng-controller="Ctrl1">
+    ng-repeat over an array of names (primitives):
+    <ul>
+      <li ng-repeat="name in names">
+        <input ng-model="name">
+    </ul>
+  </div>
+  <div ng-controller="Ctrl2">
+    ng-repeat over an array of people (objects):
+    <ul>
+      <li ng-repeat="person in people">
+        <input ng-model="person.name">
+    </ul>
+  </div>
+  #code-end#
+</div>
+#footer#
+
+<script>
+'use strict';
+angular.module('myApp', ['periscope'])
+.controller('Ctrl1', ['$scope', function($scope) {
+  $scope.names = ['Mark', 'David'];
+}])
+.controller('Ctrl2', ['$scope', function($scope) {
+  $scope.people = [ { name: 'Ari', age: 48}, { name: 'Imad', age: 36 } ];
+}]);
+</script>
+</body>
+</html>

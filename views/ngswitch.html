@@ -1,0 +1,65 @@
+#header#
+<div class="demo">
+  <div id="instructions">
+    On this page we have an AppCtrl and one ngSwitch directive that is
+    controlled by two radio buttons.
+    <ol>
+      <li>Click the #rb#, then click the #psb# to see the initial state.
+        Because "1" is selected by default, ngSwitch creates a child |$scope|.
+      <li>Type something in the textbox, then click the #psb#.
+        The primitive associated with |ng-model| is created on the child scope.
+        This property now hides/shadows the parent |$scope| property of the same
+        name.
+      <li>Select "2", then click the #psb#.
+        ngSwitch removes the |$scope| it had previously created and then creates
+        a new child |$scope|.
+        The DOM associated with |ng-switch-default| contains an |ng-controller|
+        directive, so a grandchild scope is also created.
+      <li>Type something into both textboxes, then click the #psb#.
+        This time, the primitive associated with |ng-model| is created on the
+        ngController/grandchild |$scope|, rather than the ngSwitch |$scope|.
+        This property now hides/shadows the grandparent |$scope| property of the
+        same name.
+        The object property associated with the second |ng-model| references
+        the object in the grandparent |$scope|, so changes are affected in the
+        grandparent |$scope|.
+    </ol>
+    <p><b>Tip:</b> if your code stopped working after adding an ngSwitch around it,
+      chances are that an "own" primitive property is getting created on a
+      child |$scope|.  Use an object property instead.
+  </div>
+  #code-start#
+  <div ng-controller="AppCtrl">
+    primitive: <i>{{primitive}}</i>,  model.prop: <i>{{model.prop}}</i><br>
+    <input type="radio" ng-model="switcher" value="1">1<br>
+    <input type="radio" ng-model="switcher" value="2">2
+    <div ng-switch="switcher">
+      <div ng-switch-when="1">You selected 1
+        <div>primitive: <input ng-model="primitive"></div>
+      </div>
+      <div ng-switch-default>You selected something other than 1
+        <div ng-controller="Ctrl2">
+          primitive:  <input ng-model="primitive"><br>
+          model.prop: <input ng-model="model.prop">
+        </div>
+      </div>
+    </div>
+  </div>
+  #code-end#
+</div>
+#footer#
+
+<script>
+'use strict';
+angular.module('myApp', ['periscope'])
+.controller('AppCtrl', ['$scope', function($scope) {
+  $scope.switcher  = 1;
+  $scope.primitive = 'hello';
+  $scope.model     = { prop: 'hi'};
+}])
+.controller('Ctrl2', ['$scope', function($scope) {
+  $scope.ctrl = 'ctrl2';
+}]);
+</script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+#header#
+<div class="demo">
+  <div id="instructions">
+    On this page we have a controller that contains a directive that uses
+    transclusion &ndash; i.e., <tt>transclude: true</tt> &ndash;
+    and specifies a new isolate scope &ndash; i.e., <tt>scope: { ... }</tt>.
+    <ol>
+      <li>Click the #rb# <b>and the "fns" checkbox</b>,
+        then click the #psb# to see the initial state.
+        |ng-transclude| creates a new transcluded scope, and the directive creates
+        its own isolate scope as well. The transcluded scope is a child of the
+        directive's isolate scope.
+        (If you are using a release of Angular prior to v1.3, the transcluded and
+        isolate scopes are instead siblings.)
+        In all Angular releases, the transcluded scope prototypically inherits from
+        the controller scope, but the isolate scope inherits from |Scope|.
+      <li>Click the "change name" link, then click the #psb#.
+        The ng-controller |changeName()| |$scope| function is called, which
+        modifies a property on that |$scope|.  The transcluded content sees this
+        change because it prototypically inherits from this scope.
+      <li>Click the "change dir name" link, then click the #psb#.
+        The directive |$scope| |changeDirName()| function is called, which modifies
+        a property on the directive isolate scope.  The transcluded content does
+        not see this change, because it doesn't prototypically inherit from the
+        isolate scope.
+      <li>Click the "change $parent name" link, then click the #psb#.
+        Due to the <tt>&</tt> mapping we set up in the directive definition,
+        the ng-controller |changeName()| |$scope| function is called, which
+        modifies a property on that |$scope|.  The transcluded content sees this
+        change because it prototypically inherits from this scope.
+      <li>Type something into both textboxes, then click the #psb#.
+        Because |name| is a primitive, the write creates a new local property on
+        the transcluded scope.  This is probably not what you want because there
+        is no way to write Ctrl1 code or directive code to retrieve values from
+        the transcluded scope...  because there is no way to get from the
+        controller scope or the directive to the transcluded scope.
+        <br>(If you are using a release of Angular prior to v1.3 one could use a hack
+        to get from the isolate scope to the transcluded scope by using one of
+        Angular's private properties, |$$nextSibling|, but don't do that.)
+    </ol>
+    <p><b>Best Practice:</b> from Angular docs: only use <tt>transclude: true</tt>
+      when you want to create a directive that wraps arbitrary content.
+      Don't use |ng-model| with primitives in your transcluded content.
+  </div>
+  #code-start#
+  <div ng-controller="Ctrl1">
+    ctrl:       <i>{{ctrl}}</i><br>
+    name:       <i>{{name}}</i><br>
+    model.prop: <i>{{model.prop}}</i>
+    <div my-directive alter-name="changeName(name)">
+      Transclude this stuff.<br>
+      ctrl: <i>{{ctrl}}</i><br>
+      name: <i>{{name}}</i><br>
+      <a href ng-click="changeName('Harsha')">change name</a><br>
+      name:       <input ng-model="name"><br>
+      model.prop: <input ng-model="model.prop">
+    </div>
+  </div>
+  #code-end#
+</div>
+#footer#
+
+<script>
+'use strict';
+angular.module('myApp', ['periscope'])
+.controller('Ctrl1', ['$scope', function($scope) {
+  $scope.ctrl       = 'ctrl1';
+  $scope.name       = 'Mark';
+  $scope.changeName = function(name) {
+    $scope.name = name;
+  };
+  $scope.model = { prop: 'hi' };
+}])
+.directive('myDirective', function() {
+  return {
+    scope:      {
+      'changeParentName': '&alterName'
+    },
+    transclude: true,
+    template:   '<div>'
+                + '<div class="dialog" ng-transclude></div>'
+                + 'Other stuff from the directive template:<br>'
+                + 'ctrl: <i>{{ctrl}}</i><br>'
+                + 'name: <i>{{name}}</i><br>'
+                + '<a href ng-click="changeDirName()">change dir name</a><br>'
+                + '<a href ng-click="changeParentName({name: \'Glenn\'})">change $parent name</a>'
+                + '</div>',
+    controller: function($scope) {
+      $scope.ctrl       = 'dir';
+      $scope.name       = 'Charles';
+      $scope.newProp    = 'new prop';
+      $scope.changeDirName = function() {
+        $scope.name = 'Alex';
+      };
+    }
+  }
+});
+</script>
+</body>
+</html>

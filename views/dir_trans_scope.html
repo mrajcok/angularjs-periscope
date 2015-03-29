@@ -1,0 +1,91 @@
+#header#
+<div class="demo">
+  <div id="instructions">
+    On this page we have a controller that contains a directive that uses
+    transclusion &ndash; i.e., <tt>transclude: true</tt> &ndash;
+    and specifies a new scope &ndash; i.e., <tt>scope: true</tt>.
+    The directive's |template| also does more than just wrap the
+    contained content &ndash; it adds some additional content.
+    <ol>
+      <li>Click the #rb#, then click the #psb# to see the initial state.
+        |ng-transclude| creates a new transcluded scope, and the directive creates
+        its own scope as well.  The transcluded scope is a child of the directive
+        scope.  (If you selected a release of Angular prior to v1.3, the
+        transcluded and directive scopes are instead siblings.)
+        In all Angular releases, the two scopes prototypically inherit from the
+        controller scope.
+      <li>Click the first "change name" link, then click the #psb#.
+        The ng-controller |$scope| function is called, which modifies a property
+        on that scope.  The transcluded content sees this change because it
+        prototypically inherits from this scope.
+      <li>Click the second "change name" link, then click the #psb#.
+        The directive |$scope| function is called, which modifies a property
+        on the directive child scope.  The transcluded content does not see
+        this change, because it doesn't prototypically inherit from this scope.
+      <li>Type something into both textboxes, then click the #psb#.
+        Because |name| is a primitive, the write creates a new local property on
+        the transcluded scope.  This is probably not what you want because there
+        is no way to write Ctrl1 code or directive code to retrieve values from
+        the transcluded scope...  because there is no way to get from the
+        controller scope or the directive to the transcluded scope.
+        <br>(If you selected a release of Angular prior to v1.3, you could use a
+        hack to get from the directive scope to the transcluded scope by using one
+        of Angular's private properties, |$$nextSibling|, but don't do that.)
+    </ol>
+    <p><b>Best Practice:</b> from Angular docs: only use <tt>transclude: true</tt>
+      when you want to create a directive that wraps arbitrary content.
+      Don't use |ng-model| with primitives in your transcluded content.
+  </div>
+  #code-start#
+  <div ng-controller="Ctrl1">
+    ctrl:       <i>{{ctrl}}</i><br>
+    name:       <i>{{name}}</i><br>
+    model.prop: <i>{{model.prop}}</i>
+    <div my-directive>
+      Transclude this stuff.<br>
+      ctrl: <i>{{ctrl}}</i><br>
+      name: <i>{{name}}</i><br>
+      <a href ng-click="changeName()">change name</a><br>
+      name:       <input ng-model="name"><br>
+      model.prop: <input ng-model="model.prop">
+    </div>
+  </div>
+  #code-end#
+</div>
+#footer#
+
+<script>
+'use strict';
+angular.module('myApp', ['periscope'])
+.controller('Ctrl1', ['$scope', function($scope) {
+  $scope.ctrl       = 'ctrl1';
+  $scope.name       = 'Mark';
+  $scope.changeName = function() {
+    $scope.name = 'Harsha';
+  };
+  $scope.model = { prop: 'hi' };
+}])
+.directive('myDirective', function() {
+  return {
+    scope:      true,
+    transclude: true,
+    template:   '<div>'
+                + '<div class="dialog" ng-transclude></div>'
+                + 'Other stuff from the directive template:<br>'
+                + 'ctrl: <i>{{ctrl}}</i><br>'
+                + 'name: <i>{{name}}</i><br>'
+                + '<a href ng-click="changeName()">change name</a>'
+                + '</div>',
+    controller: function($scope) {
+      $scope.ctrl       = 'dir';
+      $scope.name       = 'Charles';
+      $scope.newProp    = 'new prop';
+      $scope.changeName = function() {
+        $scope.name = 'Alex';
+      };
+    }
+  }
+});
+</script>
+</body>
+</html>

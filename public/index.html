@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Peri$scope Demos</title>
+  <link rel="stylesheet" href="styles/demos.css">
+</head>
+<body ng-app="myApp">
+
+<div><img class="logo" src="/images/periscope_small.png" alt="Peri$scope">
+  <span class="page-title">Demos</span>
+</div>
+<div ng-controller="VersionCtrl">Select an Angular release:
+  <label><input type="radio" ng-model="version" value="1.4">1.4</label>
+  <label><input type="radio" ng-model="version" value="1.3">1.3</label>
+  <label><input type="radio" ng-model="version" value="1.2">1.2</label>
+  <label><input type="radio" ng-model="version" value="1.0">1.0</label>
+  <br>Then select a demo.  It is recommended that you go through the
+  demos in the order shown.
+  <ul>
+    <li><a href="demos/scope_props/{{version}}">add, change, delete $scope properties
+    <li><a ng-href="demos/nested_ctrls/{{version}}">$scope inheritance with nested controllers</a>
+    <li><a ng-href="demos/simple_form/{{version}}">simple form</a> including FormController and NgModelController
+    <li><a ng-href="demos/nested_forms/{{version}}">nested forms</a>
+    <li>Angular directives that create new scope
+      <ul>
+        <li><a ng-href="demos/ngrepeat/{{version}}">ngRepeat</a>
+        <li><a ng-href="demos/ngview/{{version}}">ngView</a>
+        <li><a ng-href="demos/nginclude/{{version}}">ngInclude</a>
+        <li><a ng-href="demos/ngif/{{version}}">ngIf</a>
+        <li><a ng-href="demos/ngswitch/{{version}}">ngSwitch</a>
+      </ul>
+    <li>Custom directives
+      <ul>
+        <li><a ng-href="demos/dir_noscope/{{version}}">no new scope</a>
+        <li><a ng-href="demos/dir_scope/{{version}}">new child scope</a>
+        <li><a ng-href="demos/dir_isolate/{{version}}">new isolate scope</a>
+        <li><a ng-href="demos/dir_trans_noscope/{{version}}">transcluded scope
+           with no new scope</a>
+        <li><a ng-href="demos/dir_trans_scope/{{version}}">transcluded scope
+           with new scope</a>
+        <li><a ng-href="demos/dir_trans_isolate/{{version}}">transcluded scope
+           with new isolate scope</a>
+      </ul>
+    <li><a href="demos/dir_multiple/{{version}}">multipe directives on the same
+       element</a>
+    <li><a href="demos/service/{{version}}">referencing data in a service</a>
+    <li><a href="demos/service_inject_dir/{{version}}">injecting a service into a directive</a>
+    <li><a href="demos/controller_as/{{version}}">"controller as"</a>
+  </ul>
+</div>
+<div>
+  Optionally, modify <tt>public/app.html</tt> and <tt>public/scripts/app.js</tt>
+  with some of your own code, then <a href="app.html">examine that app</a>
+  with Peri$scope.
+</div>
+
+<script src="bower_components/angularjs-1.4/angular.js"></script>
+<script>
+angular.module('myApp', [])
+.controller('VersionCtrl', ['$scope', function($scope) {
+  $scope.version = '1.4';
+}]);
+</script>
+</body>
+</html>

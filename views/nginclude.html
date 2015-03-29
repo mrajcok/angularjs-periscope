@@ -1,0 +1,66 @@
+#header#
+<div class="demo">
+  <div id="instructions">
+    On this page we have an AppCtrl and two views which are loaded via ngInclude:
+    <ol>
+      <li>Click the #rb#, then click the #psb# to see the initial state.
+        View1's partial/template does not define a controller (|ng-controller|
+        is not used).  View2's partial uses |ng-controller|.
+        However, |ng-include| always creates a new |$scope|, so view1 gets
+        a |$scope| even though |ng-controller| is not used.
+        View2 gets two |$scope|s, one from |ng-include| and one from |ng-controller|.
+        Notice how both "primitive" textboxes initially contain the |primitive| value
+        in the parent/AppCtrl |$scope|.
+      <li>Edit one or both "model.prop" textboxes, then click the #psb#.
+        Since the |ng-model| directive in the views specify the same ancestor
+        object property, |model.prop|, the object in the AppCtrl |$scope| is
+        modified.
+      <li>Edit the primitive textboxes, then click the #psb#.
+        Since the |ng-model| directives associated with these textboxes specifies
+        a primitive type, a property is created on the local scope when you
+        write/change the value.  This property hides/shadows the parent |$scope|
+        property of the same name, which is probably not what you want.
+    </ol>
+    <p><b>Tip:</b> if you move a chunk of HTML into a new partial and when you
+      ngInclude it things no longer work, chances are that an "own" primitive
+      property is getting created on a child |$scope|.  
+      Use an object property instead.
+  </div>
+  #code-start#
+  <div ng-controller="AppCtrl">
+    <p>ctrl: <i>{{ctrl}}</i>, primitive: <i>{{primitive}}</i>
+    <div ng-include="'view1.html'"></div>
+    <div ng-include="'view2.html'"></div>
+  </div>
+  <script type="text/ng-template" id="view1.html">
+    ngInclude View1
+    <br>ctrl: <i>{{ctrl}}</i>
+    <br>model.prop: <input ng-model="model.prop">
+    <br>primitive:  <input ng-model="primitive">
+  </script>
+  <script type="text/ng-template" id="view2.html">
+    <div ng-controller="View2Ctrl">
+      ngInclude View2
+      <br>ctrl: <i>{{ctrl}}</i>
+      <br>model.prop: <input ng-model="model.prop">
+      <br>primitive:  <input ng-model="primitive">
+    </div>
+  </script>
+  #code-end#
+</div>
+#footer#
+
+<script>
+'use strict';
+angular.module('myApp', ['periscope'])
+.controller('AppCtrl', ['$scope', function($scope) {
+  $scope.ctrl  = 'app';
+  $scope.model = { prop: 'hello' };
+  $scope.primitive = "12";
+}])
+.controller('View2Ctrl', ['$scope', function($scope) {
+  $scope.ctrl = 'view2';
+}])
+</script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+#header#
+<div class="demo">
+  <div id="instructions">
+    On this page we have an AppCtrl and two views which are controlled by ngView.
+    Each view has its own controller, and hence its own |$scope|.
+    <ol>
+      <li>Click the #rb#, then click the #psb# to see the initial state.
+        Intially, we only have the AppCtrl |$scope|, and there is no content in
+        the |ngView| area.
+      <li>Navigate to <a href="/view1">/view1</a>, click the #psb#.
+        A new scope is created because ngView always creates a new |$scope| when
+        the route changes.
+        The scope is colored orange to indicate that it is new.
+        (Note, Peri$scope does not indicate that certain scopes were deleted.)
+        View1Ctrl modifies |$scope.breadcrumbs| which is an array (i.e., a
+        reference type), so an "own" property is not created the View1Ctrl
+        |$scope|.
+        Rather, the array that AppCtrl created is modified.
+        In contrast, a new |ctrl| property is created on the View1Ctrl |$scope|
+        (which shadows/hides the |ctrl| property on the AppCtrl |$scope|) because
+        it was assigned a primitive value.
+      <li>Navigate to <a href="/view2">/view2</a>, click the #psb#.
+        The |$scope| associated with route /view1 was deleted, and a new 
+        View2Ctrl |$scope| was created.
+      <li>Navigate to <a href="/view3">/view3</a>, click the #psb#.
+        Route /view3 does not define a controller, but a new |$scope| is still
+        created by directive ngView. 
+        (Because there is no controller, the breadcrumbs aren't updated.)
+        In the view we still reference |ctrl|, but we did not set this primitive
+        on the child |$scope| that ngView created, so it looks up the prototype
+        chain and finds it in the AppCtrl |$scope|.  Interesting eh?
+      <li>Go back to the <a href ng-click="demosHomePage()">demos page</a>.
+    </ol>
+    <p><b>Tip:</b> if you find that after moving code into an ngView view that
+      things no longer work, chances are that an "own" primitive property is
+      getting created on a child |$scope|. Use an object property instead.
+      <p>Note that this example is contrived.  Normally you should put shared
+      data (like breadcrumbs) into a 
+      <a href="/demos/service/#angularVersion#">service</a>, and then have each
+      controller inject that service to access the data.
+      The controllers can then either get references to that data (we'll see
+      an example of this in a later demo),
+      or better, have the service define an API that the controller can use.
+  </div>
+  #code-start#
+  <div ng-controller="AppCtrl">
+    <p>ctrl: <i>{{ctrl}}</i>, breadcrumbs: <i>{{breadcrumbs}}</i>
+    <p>ngView content: <div ng-view></div>
+  </div>
+  #code-end#
+</div>
+<div periscope></div>
+<script>var instructionEl = document.getElementById("instructions");</script>
+<script src="/bower_components/angularjs-#angularVersion#/angular.js"></script>
+#ngroute-script#
+<script src="/scripts/periscopeModule.js"></script>
+
+<script type="text/ng-template" id="view1.html">
+  <h3>View 1</h3>
+  /view1 content here.  ctrl: <i>{{ctrl}}</i>
+</script>
+<script type="text/ng-template" id="view2.html">
+  <h3>View 2</h3>
+  /view2 content here.  ctrl: <i>{{ctrl}}</i>
+</script>
+<script type="text/ng-template" id="view3.html">
+  <h3>View 3</h3>
+  /view3 content here.  ctrl: <i>{{ctrl}}</i>
+</script>
+<script>
+'use strict';
+angular.module('myApp', [#ngroute-module# 'periscope'])
+.config(['$routeProvider', '$locationProvider',
+ function($routeProvider, $locationProvider) {
+  $routeProvider
+  .when('/view1', {
+    templateUrl: 'view1.html',
+    controller:  'View1Ctrl',
+  })
+  .when('/view2', {
+    templateUrl: 'view2.html',
+    controller:  'View2Ctrl'
+  })
+  .when('/view3', {
+    templateUrl: 'view3.html'
+    // no controller
+  })
+  $locationProvider.html5Mode(true);
+}])
+.controller('AppCtrl', ['$scope','$window', function($scope,$window) {
+  $scope.breadcrumbs    = [ 'home' ];
+  $scope.ctrl           = 'app';
+  $scope.demosHomePage  = function() {
+    // because we installed routes, we need to set window.location.href
+    // in order to bypass Angular's routing to get back to the demos page
+    $window.location.href = '/';
+  };
+}])
+.controller('View1Ctrl', ['$scope', function($scope) {
+  $scope.ctrl = 'View1';
+  $scope.breadcrumbs.push('view1');
+  $scope.$on('$destroy', function() {
+    $scope.breadcrumbs.pop();
+  });
+}])
+.controller('View2Ctrl', ['$scope', function($scope) {
+  $scope.ctrl = 'View2';
+  $scope.breadcrumbs.push('view2');
+  $scope.$on('$destroy', function() {
+    $scope.breadcrumbs.pop();
+  });
+}]);
+</script>
+</body>
+</html>

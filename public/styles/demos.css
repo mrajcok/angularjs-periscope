@@ -1,0 +1,80 @@
+body {
+  font: 14px helvetica, arial, sans-serif;
+  margin-top: 0px;
+}
+.page-title {
+  font: bold large helvetica, arial, sans-serif;
+  margin: 0 2em 0 0.5em;
+}
+.logo {
+  vertical-align: middle;
+}
+#instruction-buttons {
+  float: left;
+}
+a:hover {
+  background-color: #ECF5FB;
+}
+label {
+  cursor: pointer;
+}
+.demo {
+  max-width: 70em;
+}
+.demo input {
+  width: 7em;
+}
+#ngif-checkbox, input[type=radio] {
+  width: 1em;
+}
+li {
+  margin-bottom: 3px;
+}
+tt {
+  background-color: #eee;
+}
+.code {
+  font-size: 10pt;
+  float: right;
+  border-left: 1px solid #ddd;
+  background-color: #f8f8f8;
+}
+pre {
+  margin: 4px 5px 6px 0;
+}
+#instructions {
+  margin: 0 0 10px;
+  max-width: 50em;
+  height: 10em;
+  overflow: auto;
+  padding: 4px 8px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+div[ng-controller] {
+  /* margin-top: 10px; */
+  margin-bottom: 10px;
+}
+#periscope button,
+#periscope select {
+  margin-right: 5px;
+}
+.dialog {
+  background-color: #eef;
+  border: 1px solid lightgray;
+  width: 15em;
+}
+table {
+  border-collapse: collapse;
+  margin: 10px 0;
+}
+td, th {
+  border: 1px solid lightgray;
+  padding: 3px;
+}
+td:nth-child(1) {
+  text-align: center;
+}
+td:nth-child(2), td:nth-child(3) {
+  white-space: nowrap;
+}

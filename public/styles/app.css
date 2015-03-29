@@ -1,0 +1,10 @@
+body {
+  font: 14px helvetica, arial, sans-serif;
+}
+a:hover {
+  background-color: #ECF5FB;
+}
+#periscope button,
+#periscope select {
+  margin-right: 5px;
+}

@@ -1,0 +1,57 @@
+#header#
+<div class="demo">
+  <div id="instructions">
+    On this page we have an AppCtrl and one ngIf
+    directive whose expression is tied to the checkbox.
+    <ol>
+      <li>Click the #rb#, then click the #psb# to see the initial state.
+        Since the checkbox is initially unchecked, only the AppCtrl |$scope|
+        exists.
+      <li>Click the "show ngIf content" checkbox, then click the #psb#.
+        A new scope is created (by ngIf) because the ngIf expression evalues to true now.
+      <li>Edit the two textboxes underneath the checkbox, then click the #psb#.
+        Since the |ng-model| directive associated with the first textbox
+        references an object property in an ancestor |$scope|, the ancestor
+        property is changed.
+        However, the |ng-model| directive associated with the second textbox
+        specifies a primitive type, so a local property is created on the ngIf
+        |$scope|, which hides/shadows the ancestor primitive property of the same
+        name.  This is probably not what you want.
+      <li>Uncheck the "show ngIf content" checkbox, then click the #psb#.
+        Because ngIf removes the portion of the DOM associated with it, the
+        associated |$scope| is also destroyed.
+      <li>Click the "show ngIf content" checkbox, then click the #psb#.
+        ngIf creates a new |$scope|.  Note how the "primitive" textbox is set to
+        12 again. Until you change the value of that textbox, it reads the value
+        from the ancestor/parent |$scope| &ndash; a new property is not created
+        on the ngIf |$scope| until you write a new value.
+    </ol>
+    <p><b>Tip:</b> if your code stopped working after adding an ngIf around it,
+      chances are that an "own" primitive property is getting created on a
+      child |$scope|.  Use an object property instead.
+  </div>
+  #code-start#
+  <div ng-controller="AppCtrl">
+    model.prop: <input ng-model="model.prop">
+    <br>primitive: <i>{{primitive}}</i>
+    <br><input id="ngif-checkbox" type="checkbox" ng-model="checked">show ngIf content:
+    <div ng-if="checked">
+      model.prop: <input ng-model="model.prop"><br>
+      primitive:  <input ng-model="primitive">
+    </div>
+  </div>
+  #code-end#
+</div>
+#footer#
+
+<script>
+'use strict';
+angular.module('myApp', ['periscope'])
+.controller('AppCtrl', ['$scope', function($scope) {
+  $scope.checked    = false;
+  $scope.model      = { prop: 'hello' };
+  $scope.primitive  = 12;
+}])
+</script>
+</body>
+</html>

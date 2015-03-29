@@ -1,0 +1,43 @@
+#header#
+<div class="demo">
+  <div id="instructions">
+    On this page we have a controller that contains a directive that does not
+    create a new scope.
+    <ol>
+      <li>Click the #rb#, then click the #psb# to see the initial state.
+        Because the directive does not create a new scope, there is only the
+        controller scope.
+      <li>Type something in the textboxes, then click the #psb#.
+        Again, since there is only one scope, primitives and object properties
+        associated with |ng-model| simply affect the one scope.
+    </ol>
+    <p><b>Tip:</b> if your directive does not create its own scope, make sure it does
+      not create new |$scope| properties and polute the parent.
+      <br>See also <a href="http://stackoverflow.com/questions/14914213">this
+      StackOverflow question</a> about how to choose the correct type of scope to
+      use when creating a directive.
+  </div>
+  #code-start#
+  <div ng-controller="Ctrl">
+    <div my-directive></div>
+  </div>
+  #code-end#
+</div>
+#footer#
+
+<script>
+'use strict';
+angular.module('myApp', ['periscope'])
+.controller('Ctrl', ['$scope', function($scope) {
+  $scope.primitive = 'hello';
+  $scope.model     = { prop: 'hi'};
+}])
+.directive('myDirective', function() {
+  return {
+    template: '<div>primitive: <input ng-model="primitive"><br>'
+              + 'model.prop: <input ng-model="model.prop"></div>'
+  }
+});
+</script>
+</body>
+</html>

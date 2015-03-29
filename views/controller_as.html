@@ -1,0 +1,62 @@
+#header#
+<div class="demo">
+  <div id="instructions">
+    On this page we have two controllers.  One is nested inside the other.
+    We use the "controller as" syntax to allow the child to easily refer to
+    a |name| property defined on the parent controller.
+    <ol>
+      <li>Click the #rb#, then click the #psb# to see the initial state.
+        <br>The "controller as" syntax publishes the controller instance onto the
+        |$scope| object using the name we supply.  In our example, |parentCtrl|
+        and |childCtrl| properties are created on the controller scopes.
+        The values of these properties are references to the associated
+        controller objects/instances.
+        We define |name| properties on these controllers using the 
+        <tt>this.name = ...</tt> syntax.  
+        We also define |associatedCtrl| properties on the scope objects, using
+        the normal <tt>$scope.associatedCtrl = ...</tt> syntax.
+        <br>We need to use |$parent| in order for the child to get the
+        value of the ParentCtrl |$scope| property |associatedCtrl| because
+        the ChildCtrl's |$scope| has a property with the same name.
+      <li>Type something in the textbox, then click the #psb#.
+        <br>Even though |name| is a primitive, since |ng-model| binds to 
+        |parentCtrl.name|, |parentCtrl| is a reference, so the write goes
+        to the |parentCtrl| object &ndash; a new property on the ChildCtrl
+        scope is not created.
+    </ol>
+    <p><b>Best Practice:</b> Although the "controller as" syntax solves the
+      problem of having unexpected "own" primitive properties from being created
+      in child scopes (that shadow ancestor properties of the same name),
+      it adds some complexity.  E.g., you can define properties on either the
+      |$scope| object or the controller object.  Use with care.
+  </div>
+  #code-start#
+  <div ng-controller="ParentCtrl as parentCtrl">
+    associatedCtrl:  <i>{{associatedCtrl}}</i><br>
+    parentCtrl.name: <i>{{parentCtrl.name}}</i>
+    <div ng-controller="ChildCtrl as childCtrl">
+      associatedCtrl: <i>{{associatedCtrl}}</i><br>
+      childCtrl.name: <i>{{childCtrl.name}}</i><br>
+      $parent.associatedCtrl: <i>{{$parent.associatedCtrl}}</i><br>
+      parentCtrl.name: <i>{{parentCtrl.name}}</i><br>
+      parentCtrl.name: <input ng-model="parentCtrl.name">
+    </div>
+  </div>
+  #code-end#
+</div>
+#footer#
+
+<script>
+'use strict';
+angular.module('myApp', ['periscope'])
+.controller('ParentCtrl', ['$scope', function($scope) {
+  $scope.associatedCtrl = 'parent';
+  this.name             = 'Mark';
+}])
+.controller('ChildCtrl', ['$scope', function($scope) {
+  $scope.associatedCtrl = 'child';
+  this.name             = 'Sathiya';
+}]);
+</script>
+</body>
+</html>

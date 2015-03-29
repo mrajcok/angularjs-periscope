@@ -1,0 +1,58 @@
+#header#
+<div class="demo">
+  <div id="instructions">
+    On this page we have one controller, hence one |$scope|, and one form.
+    <ol>
+      <li>Click the Peri$scope #rb# (not the form #rb#) to delete the images
+        and clear the diff history.
+        Check the "key" checkbox and then click the #psb# to see the initial state.
+        |formCtrl| is an instance of
+        <a href="https://docs.angularjs.org/api/ng/type/form.FormController">FormController</a>
+        and |modelCtrl| is an instance of
+        <a href="https://docs.angularjs.org/api/ng/type/ngModel.NgModelController">NgModelController</a>.
+        Peri$scope shows select properties of those controllers.
+        <br><b>TBD:</b> Someday, Peri$scope might be enhanced to show FormControllers
+        and NgModelControllers as separate nodes in the graph/picture.
+      <li>Uncheck the "key" checkbox.
+        Type something into the textbox, click the #psb#.
+        Property |prop1| is updated, and various properties of the FormController
+        and NgModelController are updated.
+      <li>Click the form #rb#, click the #psb#.
+        Notice the updates to the FormController and NgModelController properties.
+      <li>Type something into the textbox, click the submit button, click the #psb#.
+        Of the many properies that changed, notice that |$submitted| is now |true|.
+      <li><b>TBD:</b> add validation, to show how properties |$valid|, |$invalid| and |$error| change.
+    </ol>
+    <p><b>Best Practice:</b> |ng-model| should be used with model properties
+      that the |$scope| references.  I.e., have a "dot" in your ng-model expression.
+      <a href="http://youtu.be/ZhfUv0spHCY?t=30m2s">Listen to Misko</a> if that
+      didn't make sense.
+  </div>
+  #code-start#
+  <div ng-controller="Ctrl1">
+    <form name="formCtrl">
+      model.prop1: <input ng-model="model.prop1" name="modelCtrl">
+      <input type="button" ng-click="reset(formCtrl)" value="reset">
+      <input type="submit" ng-click="submit()" value="submit">
+    </form>
+  </div>
+  #code-end#
+</div>
+#footer#
+
+<script>
+'use strict';
+angular.module('myApp', ['periscope'])
+.controller('Ctrl1', ['$scope', function($scope) {
+  $scope.model = { prop1: ''};
+  $scope.reset = function(formCtrl) {
+    $scope.model.prop1 = '';
+    formCtrl.$setPristine();
+  };
+  $scope.submit = function() {
+    // do something with $scope.model.prop1
+  };
+}]);
+</script>
+</body>
+</html>

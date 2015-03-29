@@ -1,0 +1,20 @@
+{
+  "name": "angularjs-periscope",
+  "version": "0.0.1",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angularjs-1.0": "angularjs#~1.0",
+    "angularjs-1.2": "angularjs#~1.2",
+    "angularjs-1.3": "angularjs#~1.3",
+    "angularjs-route-1.3": "angular-route#~1.3",
+    "angularjs-1.4": "angularjs#~1.4",
+    "angularjs-route-1.4": "angular-route#~1.4"
+  }
+}

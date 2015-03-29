@@ -1,0 +1,50 @@
+#header#
+<div class="demo">
+  <div id="instructions">
+    On this page we have a directive that creates an isolate scope and injects
+    a service.
+    <ol>
+      <li>Click the #rb#, then click the #psb# to see the initial state.
+        The directive assigns local isolate scope variable |service| to |myService|,
+        hence |service| is a reference to the service object.
+      <li>Type something in the textboxex, then click the #psb#.
+        Since |ng-model| for these textboxes refer to properties of the
+        service object, that object is affected.
+    </ol>
+  </div>
+  #code-start#
+  <div ng-controller="Ctrl1">
+    <div my-directive></div>
+  </div>
+  #code-end#
+</div>
+#footer#
+
+<script>
+'use strict';
+angular.module('myApp', ['periscope'])
+.factory('myService', [function() {
+  var myService = {
+    servicePrimitive:  'Hello',
+    serviceObj:        { name: 'Mark' },
+  };
+  return myService;
+}])
+.controller('Ctrl1', ['$scope', function($scope) {
+  $scope.ctrl  = 'ctrl1';
+}])
+.directive('myDirective', ['myService', function(myService) {
+  return {
+    scope:    {},
+    template: '<div>'
+              + 'service.servicePrimitive: <input ng-model="service.servicePrimitive"><br>'
+              + 'service.serviceObj.name:  <input ng-model="service.serviceObj.name">'
+              + '</div>',
+    link: function(scope) {
+      scope.service = myService;
+    }
+  }
+}]);
+</script>
+</body>
+</html>

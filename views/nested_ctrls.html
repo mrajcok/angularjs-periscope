@@ -1,0 +1,94 @@
+#header#
+<div class="demo">
+  <div id="instructions">
+    On this page we have three nested controllers.
+    Each controller has its own |$scope| that prototypically
+    inherits from its parent controller's |$scope|.
+    <ol>
+      <li>Click the #rb# to delete the images and clear the diff history.
+        Check the "key" checkbox and then click the #psb# to see the initial state.
+        Notice the inheritance chain (dashed lines) and the parent-child
+        relationships (solid blue lines).
+      <li>Uncheck the "key" checkbox.
+        Type into the "primitive" textbox of the ParentCtrl and notice how all three
+        controllers show the same value for the primitive property.
+        Click the #psb# to see the changes.
+        Setting a primitive property on a |$scope| always creates an "own" property.
+        This is what is happening with |ng-model| in the ParentCtrl.
+        Looking up a property first checks the local object/|$scope|, and if there
+        is no property, JavaScript looks for it up the prototype chain.
+        This is what is happening with |ng-model| in the other two controllers.
+        Notice how only the ParentCtrl |$scope| has a <tt>primitive</tt> property.
+      <li>Type into the "primitive" textbox of the ChildCtrl and notice how the ParentCtrl
+        is no longer updating.  Changing the value in the textbox cause the
+        |ng-model| directive to write to the ChildCtrl |$scope|, hence
+        an "own" property is created, shadowing the ParentCtrl's property
+        of the same name.  Subsequent reads will now find a <tt>primitive</tt>
+        property on the ChildCtrl |$scope|.
+        Click the #psb# to see the changes.
+        Notice how the ChildCtrl |$scope| now has a |primitive| property.
+      <li>Repeat the previous step, but modify the "primitive" textbox of the
+        GrandchildCtrl.
+      <li>Type into the "model.prop1" textbox of the GrandchildCtrl, then type
+        into the "model.prop1" textbox of the other controllers.
+        Notice how all of the controllers show the same value for the object property.
+        Because an object is a "reference type" (not a primitive), the value
+        is shared across all |$scope|s.  When we read or write to an object property,
+        only the one object is affected.
+        Click the #psb# to see the changes.
+        Notice how only the ParentCtrl |$scope| has the |model| object property.
+    </ol>
+    <p><b>Best Practice:</b> prevent unexpected "own" primitive properties from
+      being created in child |$scope|s (that shadow ancestor properties of the
+      same name), by using object properties with directives like |ng-model|.
+      In general, <a href="http://youtu.be/ZhfUv0spHCY?t=30m2s">|$scope|s
+      should be referencing objects/models from elsewhere</a>
+      (like Angular services) anyway (not defining them on |$scope|s), 
+      which will avoid this problem.
+      When multiple controllers need access to the same data (or state or
+      code), a service should be used. You should not rely on scope inheritance,
+      as it restricts how you structure your HTML.
+  </div>
+  #code-start#
+  <div ng-controller="ParentCtrl">
+    Inside ParentCtrl here
+    <div>primitive: <input ng-model="primitive">,
+      model.prop1:  <input ng-model="model.prop1">,
+      parentProp:   <i>{{parentProp}}</i>
+    </div>
+    <div ng-controller="ChildCtrl">
+      Inside ChildCtrl here
+      <div>primitive: <input ng-model="primitive">,
+        model.prop1:  <input ng-model="model.prop1">,
+        childProp:    <i>{{childProp}}</i>
+      </div>
+      <div ng-controller="GrandchildCtrl">
+        Inside GrandchildCtrl here
+        <div>primitive:   <input ng-model="primitive">,
+          model.prop1:    <input ng-model="model.prop1">,
+          grandchildProp: <i>{{grandchildProp}}</i>
+  #code-end#
+        </div>
+      </div>
+    </div>
+  </div>
+ </div>
+</div>
+#footer#
+
+<script>
+'use strict';
+angular.module('myApp', ['periscope'])
+.controller('ParentCtrl', ['$scope', function($scope) {
+  $scope.parentProp = 'parent';
+  $scope.model  = {};
+}])
+.controller('ChildCtrl', ['$scope', function($scope) {
+  $scope.childProp = 'child';
+}])
+.controller('GrandchildCtrl', ['$scope', function($scope) {
+  $scope.grandchildProp = 'grandchild';
+}]);
+</script>
+</body>
+</html>
