@@ -53,7 +53,7 @@ gulp.task('default', ['demo-nodemon'], function() {
     .pipe(open('', {url: 'http://localhost:3000'} ));
   livereload.listen();
   gulp.watch('public/scripts/*.js', ['js-client']);
-  gulp.watch('views/*.html', ['demo-views']);
+  gulp.watch(['public/*.html', 'views/*.html'], ['demo-views']);
   // Chome Workspaces and LivereLoad don't play nice together with
   // CSS files. What happens is that after you edit a CSS file in your editor,
   // LiveReload initiates a GET for the CSS file with a query string, e.g.,

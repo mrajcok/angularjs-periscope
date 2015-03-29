@@ -46,16 +46,23 @@ If bower says "Unable to find a suitable version for angular, please choose one:
 select the latest angular version shown.
 
 If the GraphViz tools (e.g., `dot`) are not in your path, edit `GRAPHVIZ_PATH`
-(around line 7) in file `periscope.js`.
+(around line 7) in file `periscope.js`.  If you forget to do this, you may see
+an error like the following when you click the "Peri$scope" button on the demo pages:
+````
+ERR! post Error: spawn ENOENT
+ERR! post     at errnoException (child_process.js:1001:11)
+ERR! post     at Process.ChildProcess._handle.onexit (child_process.js:792:34)
+ERR! post  execFile error: %s { [Error: spawn ENOENT] code: 'ENOENT', errno: 'ENOENT', syscall: 'spawn' }
+````
 
 To start a server and view the demo pages:
 - `$ node demo-server.js`
-- open http://localhost:3000/
+- open [http://localhost:3000/](http://localhost:3000/)
 
 To visualize some of your own AngularJS snippets:
 - edit `public/app.html` and `public/scripts/app.js` with some of your own code
 - `$ node demo-server.js`
-- open http://localhost:3000/app.html
+- open [http://localhost:3000/app.html](http://localhost:3000/app.html)
 
 To run a CORS-enabled Peri$scope server alongside your existing server, to
 visualize your app:
@@ -94,14 +101,21 @@ If bower says "Unable to find a suitable version for angular, please choose one:
 select the latest angular version shown.
 
 If the GraphViz tools (e.g., `dot`) are not in your path, edit `GRAPHVIZ_PATH`
-(around line 7) in file `periscope.js`.
+(around line 7) in file `periscope.js`.  If you forget to do this, you may see
+an error like the following when you click the "Peri$scope" button on the demo pages:
+````
+ERR! post Error: spawn ENOENT
+ERR! post     at errnoException (child_process.js:1001:11)
+ERR! post     at Process.ChildProcess._handle.onexit (child_process.js:792:34)
+ERR! post  execFile error: %s { [Error: spawn ENOENT] code: 'ENOENT', errno: 'ENOENT', syscall: 'spawn' }
+````
 
 If you want live reloading of HTML and JavaScript changes, install the
 [LiveReload browser plugin](http://help.livereload.com/kb/general-use/browser-extensions).
 
 To start a server and view the demo pages:
 - `$ gulp  # this should automatically open the demo home page and enable LiveReload server-side`
-  <br>(if the home page doesn't load, open http://localhost:3000/)
+  <br>(if the home page doesn't load, open [http://localhost:3000/](http://localhost:3000/))
 - enable LiveReload in your browser
 
 With LiveReload enabled:
@@ -265,5 +279,6 @@ a lot of edits to this README.md file, you might want to try it
 (or you might just want to take a look and see how it works so you can add this
 capability to your own projects):
 - `$ gulp readme  # this should automatically open public/README.html and enable LiveReload`
-  <br>(if the page doesn't load, open http://localhost:3000/README.html)
+  <br>(if the page doesn't load, open 
+  [http://localhost:3000/README.html](http://localhost:3000/README.html))
 - enable LiveReload in your browser
