@@ -670,7 +670,7 @@ angular.module('periscope', [])
           } else {
             if(isolateType === '=') {
               $log.error('unable to find value of isolate property "' + propertyName
-                + '" in ancestors');
+                + '" in ancestor scopes');
             }
             dst[propertyName] = refPrefix + '-|scope' + src.$parent.$id + ':';
           }
@@ -709,7 +709,7 @@ angular.module('periscope', [])
           } else {
             if(dstIsNgrepeatScope) {
               $log.warn('unable to find ngrepeat array', propertyValue,
-                'in ancestors as expected');
+                'in ancestor scopes');
             }
             dst[propertyName] = [];
             periscopeService.addArrayValues(propertyValue, dst[propertyName]);
@@ -730,7 +730,7 @@ angular.module('periscope', [])
           } else {
             if(dstIsNgrepeatScope) {
               $log.warn('unable to find ngrepeat object', propertyValue,
-                'in ancestors as expected');
+                'in ancestor scopes');
             }
             dst[propertyName] = {};
             periscopeService.addObjectProperties(propertyValue, dst[propertyName],

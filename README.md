@@ -37,7 +37,7 @@ Install [Node.js](https://nodejs.org/).
 
 ````
 $ sudo npm install -g bower
-$ git clone git://github.com/mrajcok/angularjs-periscope
+$ git clone https://github.com/mrajcok/angularjs-periscope
 $ cd angularjs-periscope
 $ npm install --production  # note, this will also run bower install
 ````
@@ -92,7 +92,7 @@ Install [Node.js](https://nodejs.org/).
 ````
 $ sudo npm install -g gulp
 $ sudo npm install -g bower
-$ git clone git://github.com/mrajcok/angularjs-periscope
+$ git clone https://github.com/mrajcok/angularjs-periscope
 $ cd angularjs-periscope
 $ npm install  # note, this will also run bower install
 ````
