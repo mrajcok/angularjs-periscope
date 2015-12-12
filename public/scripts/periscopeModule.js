@@ -341,10 +341,15 @@ angular.module('periscope', [])
         if(objectToMatch === array[i]) {
           newLabel = label + '/' + i;
         } else {
-          // determine if one of the object properties is an object and if it
-          // matches objectToMatch
-          newLabel = periscopeService.findObjectInObject(
-            label + '/' + i, array[i], objectToMatch);
+          if('$id' in objectToMatch && '$id' in array[i]) {
+            // Special case, objectToMatch and array[i] are both scopes.
+            // Don't go any deeper (we risk endless recusion).
+          } else {
+            // determine if one of the object properties is an object and if it
+            // matches objectToMatch
+            newLabel = periscopeService.findObjectInObject(
+              label + '/' + i, array[i], objectToMatch);
+          }
         }
         break;
       }
@@ -479,7 +484,8 @@ angular.module('periscope', [])
         dst[i] = {};
         if('$id' in arrayItem) {
           // guard against circular reference
-          dst[i].$id = 'scope' + arrayItem.$id;
+          //dst[i].$id = 'scope' + arrayItem.$id;
+          dst[i].$id = arrayItem.$id;
         }
         periscopeService.addObjectProperties(arrayItem, dst[i], true);
         break;
@@ -517,9 +523,13 @@ angular.module('periscope', [])
           break;
         case 'object':
           $log.debug('fvia object', arrayElementValue);
-          // determine if one of the object properties matches value
-          newLabel = periscopeService.findValueInObject(
-            label + '/' + i, arrayElementValue, value);
+          if('$id' in arrayElementValue) {
+            // we have an array of scopes, bail out to avoid possible infinite recursion
+          } else {
+            // determine if one of the object properties matches value
+            newLabel = periscopeService.findValueInObject(
+              label + '/' + i, arrayElementValue, value);
+          }
           break;
         }
       }
@@ -718,9 +728,10 @@ angular.module('periscope', [])
         case 'object':
           $log.debug('aop object value:', propertyValue);
           if('$id' in propertyValue) {
-            // guard against circular reference
-            dst[propertyName].$id = 'scope' + propertyValue.$id;
-          }
+            // guard against circular scope reference
+            //dst[propertyName] = { $id: 'scope' + propertyValue.$id };
+            dst[propertyName] = { $id: propertyValue.$id };
+          } 
           // See if a reference to this object is in an ancestor scope.
           // If so, reference it.
           ref = periscopeService.findObject(src, propertyValue);
